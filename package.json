@@ -1,0 +1,43 @@
+{
+  "name": "og-image-generator",
+  "version": "0.1.0",
+  "description": "MCP-first OG image generator for AI agents. Resize, overlay text, and manage social media images.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "mcp": "tsx src/mcp/server.ts",
+    "gen:api-key": "node scripts/generate-api-key.mjs",
+    "check": "tsc --noEmit",
+    "test:e2e": "tsx tests/e2e/run.ts"
+  },
+  "keywords": [
+    "og-image",
+    "mcp",
+    "social-media",
+    "image-generation",
+    "ai-agent"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^9.4.0",
+    "@fastify/static": "^9.0.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "better-sqlite3": "^12.6.2",
+    "fastify": "^5.7.4",
+    "nanoid": "^5.1.6",
+    "sharp": "^0.34.5",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

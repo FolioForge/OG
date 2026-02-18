@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: og-image-api
+    env: node
+    plan: starter
+    rootDir: .
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    autoDeploy: true
+    healthCheckPath: /healthz
+    disk:
+      name: og-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: DATA_DIR
+        value: /opt/render/project/src/data
+      - key: DB_PATH
+        value: /opt/render/project/src/data/og.db
+      - key: IMAGE_DIR
+        value: /opt/render/project/src/data/og-images
+      - key: MAX_REMOTE_IMAGE_BYTES
+        value: 10485760
+      - key: REMOTE_FETCH_TIMEOUT_MS
+        value: 8000
+      - key: ALLOW_PRIVATE_SOURCE_IMAGES
+        value: false
+      - key: API_KEYS
+        sync: false
+      - key: REQUIRE_API_KEY
+        value: true
+      - key: OUTSIDER_RATE_LIMIT_PER_MINUTE
+        value: 60
+      - key: ANONYMOUS_RATE_LIMIT_PER_MINUTE
+        value: 10
+      - key: INTERNAL_RATE_LIMIT_PER_MINUTE
+        value: 0
