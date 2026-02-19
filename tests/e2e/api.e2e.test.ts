@@ -13,7 +13,7 @@ import {
 } from "./helpers.js";
 
 interface ApiListResponse {
-  items: OgJob[];
+  items: Array<OgJob & { createdAtIso: string }>;
   nextCursor?: string;
 }
 
@@ -27,6 +27,7 @@ interface ErrorResponse {
 export async function runApiE2E(): Promise<void> {
   const dataDir = createTempDataDir("og-api-e2e");
   const fixtureImage = await ensureFixtureImage();
+  const fixtureBytes = Uint8Array.from(fixtureImage);
   const fixtureServer = await startFixtureImageServer(fixtureImage, 3999);
   const api = await startApiForTests(4010, dataDir);
 
@@ -42,10 +43,11 @@ export async function runApiE2E(): Promise<void> {
     assert.ok(createFromUrl.body.id);
     assert.equal(createFromUrl.body.width, 1200);
     assert.equal(createFromUrl.body.height, 630);
+    assert.match((createFromUrl.body as OgJob & { createdAtIso: string }).createdAtIso, /^\d{4}-\d{2}-\d{2}T/);
     assertFileExists(createFromUrl.body.outputPath);
 
     const multipartForm = new FormData();
-    multipartForm.set("source_image_file", new File([fixtureImage], "fixture.jpg", { type: "image/jpeg" }));
+    multipartForm.set("source_image_file", new File([fixtureBytes], "fixture.jpg", { type: "image/jpeg" }));
     multipartForm.set("title", "Upload Source");
     multipartForm.set("subtitle", "Multipart path");
     multipartForm.set("platform", "twitter");
@@ -62,7 +64,7 @@ export async function runApiE2E(): Promise<void> {
     assertFileExists(uploadBody.outputPath);
 
     const invalidBothForm = new FormData();
-    invalidBothForm.set("source_image_file", new File([fixtureImage], "fixture.jpg", { type: "image/jpeg" }));
+    invalidBothForm.set("source_image_file", new File([fixtureBytes], "fixture.jpg", { type: "image/jpeg" }));
     invalidBothForm.set("source_image_url", "http://127.0.0.1:3999/image.jpg");
     invalidBothForm.set("title", "invalid");
     const invalidBothResponse = await fetch(`${api.baseUrl}/v1/og/jobs`, {
@@ -99,10 +101,12 @@ export async function runApiE2E(): Promise<void> {
     });
     assert.equal(mapResponse.status, 200);
     assert.equal(mapResponse.body.pageUrl, mappedUrl);
+    assert.match((mapResponse.body as OgUrlMapping & { updatedAtIso: string }).updatedAtIso, /^\d{4}-\d{2}-\d{2}T/);
 
     const byUrl = await getJson<OgUrlMapping>(`${api.baseUrl}/v1/og/mappings/by-url?url=${encodeURIComponent(mappedUrl)}`);
     assert.equal(byUrl.status, 200);
     assert.equal(byUrl.body.jobId, createFromUrl.body.id);
+    assert.match((byUrl.body as OgUrlMapping & { updatedAtIso: string }).updatedAtIso, /^\d{4}-\d{2}-\d{2}T/);
 
     const jobsHtml = await getText(`${api.baseUrl}/jobs`);
     assert.equal(jobsHtml.status, 200);

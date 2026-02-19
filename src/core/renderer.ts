@@ -193,7 +193,7 @@ export async function renderOgImage(input: RenderInput): Promise<{ imageBuffer: 
   const overlaySvg = buildOverlaySvg(preset.width, preset.height, input.templateId, input.title, input.subtitle);
   const output = await resized
     .composite([{ input: Buffer.from(overlaySvg), top: 0, left: 0 }])
-    .png({ compressionLevel: 9 })
+    .png({ compressionLevel: 6 })
     .toBuffer();
 
   return {

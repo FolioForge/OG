@@ -22,6 +22,8 @@
 - `OUTSIDER_RATE_LIMIT_PER_MINUTE` default: `60`
 - `ANONYMOUS_RATE_LIMIT_PER_MINUTE` default: `20`
 - `INTERNAL_RATE_LIMIT_PER_MINUTE` default: `0` (unlimited)
+- `ENABLE_CORS` default: `true`
+- `CORS_ORIGIN` default: `*`
 
 ## GitHub Prep (Repository)
 1. Initialize git if needed: `git init`

@@ -61,6 +61,7 @@ export async function runMcpE2E(): Promise<void> {
     assert.ok(created.job_id);
     assert.equal(created.width, 1200);
     assert.equal(created.height, 627);
+    assert.match(String(created.created_at_iso), /^\d{4}-\d{2}-\d{2}T/);
 
     const listResult = (await client.callTool({
       name: "list_og_jobs",
@@ -81,6 +82,7 @@ export async function runMcpE2E(): Promise<void> {
     })) as ToolResult;
     const fetched = asObject(getResult.structuredContent);
     assert.equal(fetched.id, jobId);
+    assert.match(String(fetched.createdAtIso), /^\d{4}-\d{2}-\d{2}T/);
 
     const pageUrl = "https://folioforge.org/blog/mcp-check";
     const attachResult = (await client.callTool({
@@ -93,6 +95,7 @@ export async function runMcpE2E(): Promise<void> {
     const mapped = asObject(attachResult.structuredContent);
     assert.equal(mapped.page_url, pageUrl);
     assert.equal(mapped.job_id, jobId);
+    assert.match(String(mapped.updated_at_iso), /^\d{4}-\d{2}-\d{2}T/);
 
     const mapping = await getJson<OgUrlMapping>(`${api.baseUrl}/v1/og/mappings/by-url?url=${encodeURIComponent(pageUrl)}`);
     assert.equal(mapping.status, 200);

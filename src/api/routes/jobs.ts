@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { AppError, isAppError } from "../../core/errors.js";
 import { OgService } from "../../core/service.js";
+import { OgJob } from "../../core/types.js";
 
 const listJobsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
@@ -82,6 +83,13 @@ async function parseMultipartBody(request: FastifyRequest): Promise<{
   };
 }
 
+function withIsoJob(job: OgJob): OgJob & { createdAtIso: string } {
+  return {
+    ...job,
+    createdAtIso: new Date(job.createdAt).toISOString(),
+  };
+}
+
 export function registerJobRoutes(app: FastifyInstance, service: OgService): void {
   app.post("/v1/og/jobs", async (request, reply) => {
     try {
@@ -97,7 +105,7 @@ export function registerJobRoutes(app: FastifyInstance, service: OgService): voi
           templateId: form.templateId,
           pageUrl: form.pageUrl,
         });
-        return reply.status(201).send(result);
+        return reply.status(201).send(withIsoJob(result));
       }
 
       const body = createJobJsonSchema.parse(request.body ?? {});
@@ -110,7 +118,7 @@ export function registerJobRoutes(app: FastifyInstance, service: OgService): voi
         templateId: body.template_id,
         pageUrl: body.page_url,
       });
-      return reply.status(201).send(result);
+      return reply.status(201).send(withIsoJob(result));
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -129,7 +137,10 @@ export function registerJobRoutes(app: FastifyInstance, service: OgService): voi
     try {
       const query = listJobsQuerySchema.parse(request.query ?? {});
       const results = service.listJobs(query);
-      return reply.send(results);
+      return reply.send({
+        items: results.items.map((job) => withIsoJob(job)),
+        nextCursor: results.nextCursor,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -148,7 +159,7 @@ export function registerJobRoutes(app: FastifyInstance, service: OgService): voi
     try {
       const params = z.object({ jobId: z.string() }).parse(request.params);
       const job = service.getJobById(params.jobId);
-      return reply.send(job);
+      return reply.send(withIsoJob(job));
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { isAppError } from "../../core/errors.js";
 import { OgService } from "../../core/service.js";
+import { OgUrlMapping } from "../../core/types.js";
 
 function sendError(reply: FastifyReply, error: unknown): void {
   if (isAppError(error)) {
@@ -23,6 +24,13 @@ function sendError(reply: FastifyReply, error: unknown): void {
   });
 }
 
+function withIsoMapping(mapping: OgUrlMapping): OgUrlMapping & { updatedAtIso: string } {
+  return {
+    ...mapping,
+    updatedAtIso: new Date(mapping.updatedAt).toISOString(),
+  };
+}
+
 export function registerMappingRoutes(app: FastifyInstance, service: OgService): void {
   app.post("/v1/og/mappings", async (request, reply) => {
     try {
@@ -34,7 +42,7 @@ export function registerMappingRoutes(app: FastifyInstance, service: OgService):
         .parse(request.body ?? {});
 
       const mapping = service.attachOgToUrl(body.page_url, body.job_id);
-      return reply.status(200).send(mapping);
+      return reply.status(200).send(withIsoMapping(mapping));
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -52,7 +60,7 @@ export function registerMappingRoutes(app: FastifyInstance, service: OgService):
     try {
       const query = z.object({ url: z.string() }).parse(request.query ?? {});
       const mapping = service.getOgForUrl(query.url);
-      return reply.status(200).send(mapping);
+      return reply.status(200).send(withIsoMapping(mapping));
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({

@@ -43,3 +43,7 @@ services:
         value: 10
       - key: INTERNAL_RATE_LIMIT_PER_MINUTE
         value: 0
+      - key: ENABLE_CORS
+        value: true
+      - key: CORS_ORIGIN
+        value: "*"

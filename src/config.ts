@@ -23,6 +23,8 @@ export interface AppConfig {
   outsiderRateLimitPerMinute: number;
   anonymousRateLimitPerMinute: number;
   internalRateLimitPerMinute: number;
+  enableCors: boolean;
+  corsOrigin: string;
 }
 
 function toBool(value: string | undefined, fallback: boolean): boolean {
@@ -119,5 +121,7 @@ export function getConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     anonymousRateLimitPerMinute:
       overrides.anonymousRateLimitPerMinute ?? toInt(process.env.ANONYMOUS_RATE_LIMIT_PER_MINUTE, 20),
     internalRateLimitPerMinute: overrides.internalRateLimitPerMinute ?? toInt(process.env.INTERNAL_RATE_LIMIT_PER_MINUTE, 0),
+    enableCors: overrides.enableCors ?? toBool(process.env.ENABLE_CORS, true),
+    corsOrigin: overrides.corsOrigin ?? process.env.CORS_ORIGIN ?? "*",
   };
 }

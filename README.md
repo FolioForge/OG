@@ -27,6 +27,12 @@ Default health URL: `http://localhost:4010/healthz`
    - `INTERNAL_RATE_LIMIT_PER_MINUTE=0`
 3. Call API with `x-api-key: <key>` or `Authorization: Bearer <key>`.
 4. Outsider keys are rate-limited; internal keys can be unlimited (`0`).
+5. Browser clients can be enabled via `ENABLE_CORS=true` and `CORS_ORIGIN=<origin or *>`.
+
+## Rendering Notes
+- Timestamps now include ISO fields (`createdAtIso`, `updatedAtIso`) in API responses and `created_at_iso`, `updated_at_iso` in MCP responses.
+- Default font stack is `Inter, Arial, sans-serif`. If Inter is not installed on host infrastructure, rendering falls back to Arial/sans-serif.
+- Optional Inter asset guidance is in `fonts/README.md`.
 
 ## HTTP Endpoints
 - `POST /v1/og/jobs`

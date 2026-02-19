@@ -1,3 +1,4 @@
+import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 import staticPlugin from "@fastify/static";
 import Fastify, { FastifyInstance } from "fastify";
@@ -38,6 +39,12 @@ export async function buildApiServer(options: BuildApiServerOptions = {}): Promi
       files: 1,
     },
   });
+
+  if (config.enableCors) {
+    await app.register(cors, {
+      origin: config.corsOrigin,
+    });
+  }
 
   await app.register(staticPlugin, {
     root: path.resolve(config.imageDir),
