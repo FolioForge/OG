@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "description": "MCP-first OG image generator for AI agents. Resize, overlay text, and manage social media images.",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "mcp": "tsx src/mcp/server.ts",
     "gen:api-key": "node scripts/generate-api-key.mjs",
     "check": "tsc --noEmit",
